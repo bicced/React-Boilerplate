@@ -4,7 +4,7 @@ import { Container, Title } from '../styles';
 export default () => {
   return (
     <Container>
-      <Title>Page 1</Title>
+      <Title>Profile</Title>
     </Container>
   )
 }
