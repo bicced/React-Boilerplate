@@ -1,25 +1,58 @@
 import * as React from 'react';
-import { Navigation, StyledMenu, StyledMenuItem } from '../styles';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useWindowWidth } from './utils/window';
+import { Logo, Navigation, StyledMenu } from '../styles';
+import { Button, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
-import logo from '../assets/logo.svg';
-import { useNavigate } from 'react-router-dom';
+import { HomeOutlined, MenuOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+
+const MOBILE_BREAKPOINT = 650;
+const menuItems: MenuProps['items'] = [
+  {
+    label: 'Home',
+    key: '/',
+    icon: <HomeOutlined />,
+  },
+  {
+    label: 'Profile',
+    key: '/profile',
+    icon: <UserOutlined />,
+  },
+  {
+    label: 'Settings',
+    key: '/settings',
+    icon: <SettingOutlined />,
+  },
+];
 
 export default () => {
   const navigator = useNavigate();
+  const width = useWindowWidth();
+  const location = useLocation();
+  const isMobile = width < MOBILE_BREAKPOINT;
 
-  function routeMenu(route: string) {
-    console.log(route);
-    navigator(`/${route}`);
+  function routeMenu({key}: {key: string}) {
+    navigator(`${key}`);
+  };
+
+  function desktopMenu() {
+    return (
+      <StyledMenu items={menuItems} defaultSelectedKeys={[location.pathname]} disabledOverflow={true} onClick={routeMenu} mode='horizontal' />
+    )
+  };
+
+  function mobileMenu() {
+    return (
+      <Dropdown menu={{ items: menuItems, onClick: routeMenu }} >
+        <Button style={{width: 50, height: 50}} icon={<MenuOutlined />} />
+      </Dropdown>
+    )
   }
 
   return (
     <Navigation>
-      <img src={logo} style={{height: 50, width: 200}} />
-      <StyledMenu disabledOverflow={true} onClick={(e: any) => routeMenu(e.key)} mode='horizontal'>
-        <StyledMenuItem key=''>Home</StyledMenuItem>
-        <StyledMenuItem key='page1'>Page 1</StyledMenuItem>
-        <StyledMenuItem key='page2'>Page 2</StyledMenuItem>
-      </StyledMenu>
+      <Logo />
+      { isMobile ? mobileMenu() : desktopMenu()}
     </Navigation>
-  )
+  );
 }
